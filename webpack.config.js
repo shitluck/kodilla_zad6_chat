@@ -6,7 +6,7 @@ var path = require('path');
 var env = process.env.NODE_ENV || 'development';
 
 var plugins = [
-new HtmlWebpackPlugin({
+    new HtmlWebpackPlugin({
         template: './client/index.html',
         filename: 'index.html',
         inject: 'body',
@@ -16,44 +16,39 @@ new HtmlWebpackPlugin({
 console.log('NODE_ENV:', env);
 
 if (env === 'production') {
-plugins.push(
-    new webpack.optimize.UglifyJsPlugin(),
-    new OptimizeJsPlugin({
-      sourceMap: false
-    })
-  );
+    plugins.push(
+        new webpack.optimize.UglifyJsPlugin(),
+        new OptimizeJsPlugin({
+            sourceMap: false
+        })
+    );
 }
 
 module.exports = {
-    entry: [
+    entry: (env !== 'production' : [
         'react-hot-loader/patch',
         'webpack-dev-server/client?http://localhost:8080',
         'webpack/hot/only-dev-server',
-        './client/index.js'
-    ],
+    ] : []).concat(['./client/index.js']),
     output: {
         path: path.resolve(__dirname, './public'),
-        filename: './bundle.js'        
+        filename: './bundle.js'
     },
     module: {
-        rules: [
-            {
-                test: /\.js$/,
-                loader: "babel-loader"
-            },
-            {
-                test: /\.css$/,
-                use: [
-                    { loader: 'style-loader'},
-                    {
-                        loader: 'css-loader',
-                        options: {
-                            modules: true
-                        }
-                    }
-                ]
-            }
-        ]
+        rules: [{
+            test: /\.js$/,
+            loader: "babel-loader"
+        }, {
+            test: /\.css$/,
+            use: [{
+                loader: 'style-loader'
+            }, {
+                loader: 'css-loader',
+                options: {
+                    modules: true
+                }
+            }]
+        }]
     },
     plugins
 };
